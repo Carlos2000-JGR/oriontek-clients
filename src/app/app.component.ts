@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { ClientsComponent } from './components/clients/clients.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  standalone: true,
+  imports: [ClientsComponent],
+  template: '<app-clients></app-clients>',
+  styles: []
 })
-export class AppComponent {
-  title = 'oriontek-clients';
-}
+export class AppComponent {}
