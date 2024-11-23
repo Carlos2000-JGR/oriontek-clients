@@ -15,18 +15,18 @@ export class ClientsComponent {
   clients: Client[] = [
     {
       id: 1,
-      name: 'Juan Pérez',
-      email: 'juan.perez@ejemplo.com',
+      name: 'Juan Perez',
+      email: 'juan.perez@example.com',
       addresses: [
-        { id: 1, street: '123 Calle Principal', city: 'Santo Domingo', state: 'Distrito Nacional', zip: '10101', clientId: 1 },
+        { id: 1, street: '123 Main St', city: 'Santiago', state: 'Santiago', zip: '10114', clientId: 1 },
       ],
     },
     {
       id: 2,
-      name: 'María Rodríguez',
-      email: 'maria.rodriguez@ejemplo.com',
+      name: 'Maria Gomez',
+      email: 'maria.gomez@example.com',
       addresses: [
-        { id: 2, street: '456 Calle Secundaria', city: 'Santiago', state: 'Santiago', zip: '51000', clientId: 2 },
+        { id: 2, street: '456 Elm St', city: 'Santo Domingo', state: 'Distrito Nacional', zip: '10118', clientId: 2 },
       ],
     },
   ];
@@ -36,7 +36,7 @@ export class ClientsComponent {
   showPopup = false;
   showAddressPopup = false;
   showDeletePopup = false;
-  clientToDeleteId: number | null = null;
+  clientToDelete: number | null = null;
 
   openPopup() {
     this.clientForm = { id: 0, name: '', email: '', addresses: [] };
@@ -62,23 +62,49 @@ export class ClientsComponent {
   }
 
   openDeletePopup(clientId: number) {
-    this.clientToDeleteId = clientId;
+    this.clientToDelete = clientId;
     this.showDeletePopup = true;
   }
 
   closeDeletePopup() {
     this.showDeletePopup = false;
-    this.clientToDeleteId = null;
   }
 
   confirmDelete() {
-    if (this.clientToDeleteId !== null) {
-      this.clients = this.clients.filter((client) => client.id !== this.clientToDeleteId);
-      this.closeDeletePopup();
+    if (this.clientToDelete !== null) {
+      this.clients = this.clients.filter((client) => client.id !== this.clientToDelete);
+      this.clientToDelete = null;
     }
+    this.closeDeletePopup();
   }
 
   saveClient() {
+    // Validation to ensure all fields are filled
+    if (!this.clientForm.name.trim()) {
+      alert('Name is required.');
+      return;
+    }
+    if (!this.clientForm.email.trim()) {
+      alert('Email is required.');
+      return;
+    }
+    if (this.clientForm.addresses.length === 0) {
+      alert('At least one address is required.');
+      return;
+    }
+
+    for (let address of this.clientForm.addresses) {
+      if (
+        !address.street.trim() ||
+        !address.city.trim() ||
+        !address.state.trim() ||
+        !address.zip.trim()
+      ) {
+        alert('All address fields are required.');
+        return;
+      }
+    }
+
     if (this.clientForm.id === 0) {
       const newId = this.clients.length > 0 ? Math.max(...this.clients.map((c) => c.id)) + 1 : 1;
       this.clients.push({ ...this.clientForm, id: newId });
