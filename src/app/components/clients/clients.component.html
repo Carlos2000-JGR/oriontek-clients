@@ -1,6 +1,6 @@
 <div class="container">
   <header class="header">
-    <h1>Oriontek Client Management</h1>
+    <h1>OrionTek Client Management</h1>
     <p>Manage your clients efficiently with a clean and modern interface.</p>
   </header>
 
@@ -12,19 +12,19 @@
         <tr>
           <th>Name</th>
           <th>Email</th>
-          <th>Address</th>
           <th>Actions</th>
-
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let client of clients">
           <td>{{ client.name }}</td>
           <td>{{ client.email }}</td>
-          <td>{{ client.addresses }}</td>
           <td class="action-buttons">
-            <button class="btn-edit" (click)="editClient(client)">Edit</button>
-            <button class="btn-delete" (click)="deleteClient(client.id)">Delete</button>
+            <div class="action-button-container">
+              <button class="btn-view" (click)="openAddressPopup(client.addresses)">View Addresses</button>
+              <button class="btn-edit" (click)="editClient(client)">Edit</button>
+              <button class="btn-delete" (click)="openDeletePopup(client.id)">Delete</button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -35,26 +35,30 @@
     <div class="popup-content">
       <h3>{{ clientForm.id === 0 ? 'Add Client' : 'Edit Client' }}</h3>
       <form>
-        <div class="form-group">
-          <label for="name">Name:</label>
+        <div class="form-group address-form">
+          <label class="address-label" for="name">Name:</label>
           <input type="text" id="name" [(ngModel)]="clientForm.name" name="name" />
         </div>
-        <div class="form-group">
-          <label for="email">Email:</label>
+        <div class="form-group address-form">
+          <label class="address-label" for="email">Email:</label>
           <input type="email" id="email" [(ngModel)]="clientForm.email" name="email" />
         </div>
         <div class="form-group">
-          <label for="addresses">Addresses:</label>
-          <ul>
-            <li *ngFor="let address of clientForm.addresses">
-              <input type="text" [(ngModel)]="address.street" placeholder="Street" name="street" />
-              <input type="text" [(ngModel)]="address.city" placeholder="City" name="city" />
-              <input type="text" [(ngModel)]="address.state" placeholder="State" name="state" />
-              <input type="text" [(ngModel)]="address.zip" placeholder="Zip" name="zip" />
-              <button (click)="removeAddress(address.id)">Remove</button>
-            </li>
-          </ul>
-          <button (click)="addAddress()">Add Address</button>
+          <div class="address-list-scroll-container">
+            <div *ngFor="let address of clientForm.addresses; let i = index" class="address-form">
+              <label class="address-label">Address {{ i + 1 }}:</label>
+              <div class="address-fields">
+                <input type="text" [(ngModel)]="address.street" placeholder="Street" name="street-{{ i }}" />
+                <input type="text" [(ngModel)]="address.city" placeholder="City" name="city-{{ i }}" />
+                <input type="text" [(ngModel)]="address.state" placeholder="State" name="state-{{ i }}" />
+                <input type="text" [(ngModel)]="address.zip" placeholder="Zip" name="zip-{{ i }}" />
+              </div>
+              <button type="button" class="btn-delete" (click)="removeAddress(address.id)">Remove</button>
+            </div>
+          </div>
+          <div class="btn-add-wrapper">
+            <button type="button" class="btn-add-left" (click)="addAddress()">Add Address</button>
+          </div>
         </div>
         <div class="popup-actions">
           <button type="button" class="btn-secondary" (click)="closePopup()">Cancel</button>
@@ -63,6 +67,33 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <div class="popup" *ngIf="showAddressPopup">
+    <div class="popup-content left-aligned-content">
+      <h3>Client Addresses</h3>
+      <div class="address-list address-list-scroll-container">
+        <div *ngFor="let address of selectedAddresses" class="address-details">
+          <p><strong>Street:</strong> {{ address.street }}</p>
+          <p><strong>City:</strong> {{ address.city }}</p>
+          <p><strong>State:</strong> {{ address.state }}</p>
+          <p><strong>Zip:</strong> {{ address.zip }}</p>
+          <hr />
+        </div>
+      </div>
+      <button class="btn-close" (click)="closeAddressPopup()">Close</button>
+    </div>
+  </div>
+
+  <div class="popup" *ngIf="showDeletePopup">
+    <div class="popup-content">
+      <h3>Confirm Deletion</h3>
+      <p>Are you sure you want to delete this client? This action cannot be undone.</p>
+      <div class="popup-actions">
+        <button type="button" class="btn-secondary" (click)="closeDeletePopup()">Cancel</button>
+        <button type="button" class="btn-primary" (click)="confirmDelete()">Yes, Delete</button>
+      </div>
     </div>
   </div>
 </div>
